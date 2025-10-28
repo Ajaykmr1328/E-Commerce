@@ -26,8 +26,17 @@ public class OrderService {
         order.setShippingAddress(shipping);
         order.setBillingAddress(billing);
         order.setOrderItems(new java.util.HashSet<>(items));
+        // compute subtotal per item if not provided
+        for (OrderItem i : items) {
+            if (i.getSubtotal() == null) {
+                java.math.BigDecimal price = i.getPrice();
+                java.math.BigDecimal qty = java.math.BigDecimal.valueOf(i.getQuantity());
+                i.setSubtotal(price.multiply(qty));
+            }
+            i.setOrder(order);
+        }
         BigDecimal total = items.stream()
-            .map(i -> i.getUnitPrice().multiply(java.math.BigDecimal.valueOf(i.getQuantity())))
+            .map(OrderItem::getSubtotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(total);
         order.setStatus(OrderStatus.PENDING);

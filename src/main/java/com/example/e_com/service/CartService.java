@@ -32,11 +32,14 @@ public class CartService {
     public Cart addItem(User user, Long productId, int quantity) {
         Cart cart = getOrCreate(user);
         Product product = productRepository.findById(productId).orElseThrow();
+        if (cart.getCartItems() == null) {
+            cart.setCartItems(new java.util.HashSet<>());
+        }
         CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
         item.setQuantity(quantity);
-        item.setUnitPrice(product.getPrice());
+        item.setPrice(product.getPrice());
         cart.getCartItems().add(item);
         recalc(cart);
         return cartRepository.save(cart);
@@ -51,7 +54,7 @@ public class CartService {
 
     private void recalc(Cart cart) {
         BigDecimal total = cart.getCartItems().stream()
-            .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+            .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         cart.setTotalAmount(total);
     }
