@@ -1,0 +1,17 @@
+/* Admin-specific styles */
+:root{
+  --admin-bg: #f8f9fa;
+  --card-border: rgba(0,0,0,.125);
+}
+body{
+  background-color: var(--admin-bg);
+}
+.card {
+  border: 1px solid var(--card-border);
+}
+.product-card img{
+  max-height:160px;object-fit:cover;
+}
+.admin-inline-actions button {
+  margin-left:4px;
+}

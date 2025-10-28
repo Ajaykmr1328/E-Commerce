@@ -1,0 +1,19 @@
+<!-- Thymeleaf fragment: product card -->
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="productCard (product)">
+  <div class="card product-card">
+    <img th:src="${product.imageUrl}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+      <p class="card-text text-muted" th:text="${product.shortDescription}">Short description</p>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="fw-bold" th:text="${product.price}">₹0.00</span>
+          <small class="text-muted ms-2" th:if="${product.originalPrice}"><s th:text="${product.originalPrice}">₹0.00</s></small>
+        </div>
+        <div>
+          <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

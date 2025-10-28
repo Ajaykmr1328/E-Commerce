@@ -1,0 +1,8 @@
+<!-- Thymeleaf fragment: star rating -->
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="starRating (rating, max)">
+  <div class="star-rating">
+    <span th:each="i : ${#numbers.sequence(1, max ?: 5)}">
+      <i class="bi" th:classappend="${i <= rating} ? 'bi-star-fill text-warning' : 'bi-star'" aria-hidden="true"></i>
+    </span>
+  </div>
+</div>
