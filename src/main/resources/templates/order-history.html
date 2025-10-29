@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order History | E-Commerce</title>
+  <link rel="stylesheet" href="../static/css/order-history.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2b2d42;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    .history-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #2b2d42;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #edf2f4;
+      color: #2b2d42;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .delivered {
+      color: green;
+    }
+
+    .pending {
+      color: orange;
+    }
+
+    .cancelled {
+      color: red;
+    }
+
+    .actions {
+      text-align: right;
+      margin-top: 25px;
+    }
+
+    button {
+      background-color: #ef233c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #d90429;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Your Order History</h1>
+</header>
+
+<div class="history-container">
+  <h2>Past Orders</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>#ORD123456</td>
+        <td>Oct 20, 2025</td>
+        <td>Wireless Headphones</td>
+        <td>₹2,499</td>
+        <td class="status delivered">Delivered</td>
+        <td><button onclick="window.location.href='order-tracking.html'">Track</button></td>
+      </tr>
+      <tr>
+        <td>#ORD123457</td>
+        <td>Oct 25, 2025</td>
+        <td>Smartwatch</td>
+        <td>₹3,299</td>
+        <td class="status pending">Out for Delivery</td>
+        <td><button onclick="window.location.href='order-tracking.html'">Track</button></td>
+      </tr>
+      <tr>
+        <td>#ORD123458</td>
+        <td>Oct 10, 2025</td>
+        <td>Bluetooth Speaker</td>
+        <td>₹1,899</td>
+        <td class="status cancelled">Cancelled</td>
+        <td><button disabled>Track</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <button onclick="window.location.href='home.html'">Back to Home</button>
+  </div>
+</div>
+
+</body>
+</html>
