@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.e_commerce.model.order.Cart;
 import com.example.e_commerce.model.user.User;
@@ -164,6 +167,33 @@ public class ViewController {
             log.warn("Principal is null - user not authenticated");
         }
         return "profile";
+    }
+
+    @PostMapping("/api/user/profile/update")
+    public String updateProfile(@RequestParam String firstName,
+                                @RequestParam String lastName,
+                                @RequestParam String phoneNumber,
+                                Principal principal,
+                                RedirectAttributes redirectAttributes) {
+        log.info("Updating profile for user: {}", principal.getName());
+        
+        try {
+            User user = userService.findByEmail(principal.getName()).orElseThrow();
+            User updates = new User();
+            updates.setFirstName(firstName);
+            updates.setLastName(lastName);
+            updates.setPhoneNumber(phoneNumber);
+            
+            userService.updateProfile(user.getId(), updates);
+            
+            redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
+            log.info("Profile updated successfully for user: {}", principal.getName());
+        } catch (Exception e) {
+            log.error("Error updating profile: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Failed to update profile: " + e.getMessage());
+        }
+        
+        return "redirect:/profile";
     }
 
     @GetMapping("/orders")
