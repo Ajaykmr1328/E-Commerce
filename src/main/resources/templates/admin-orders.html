@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +26,27 @@
         </tr>
       </thead>
       <tbody id="ordersBody">
-        <tr><td colspan="6">No orders</td></tr>
+        <tr th:if="${orders.empty}">
+          <td colspan="6" class="text-center">
+            <div class="alert alert-info mb-0">No orders available yet. Orders will appear here once customers place orders.</div>
+          </td>
+        </tr>
+        <tr th:each="order : ${orders}">
+          <td th:text="${order.id}">1</td>
+          <td th:text="${order.user.firstName + ' ' + order.user.lastName}">Customer Name</td>
+          <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-20 14:30</td>
+          <td>
+            <span class="badge bg-warning" th:if="${order.status.name() == 'PENDING'}">Pending</span>
+            <span class="badge bg-info" th:if="${order.status.name() == 'PROCESSING'}">Processing</span>
+            <span class="badge bg-primary" th:if="${order.status.name() == 'SHIPPED'}">Shipped</span>
+            <span class="badge bg-success" th:if="${order.status.name() == 'DELIVERED'}">Delivered</span>
+            <span class="badge bg-danger" th:if="${order.status.name() == 'CANCELLED'}">Cancelled</span>
+          </td>
+          <td th:text="${'₹' + #numbers.formatDecimal(order.totalAmount, 1, 2)}">₹12,450.00</td>
+          <td>
+            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary">View Details</a>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,10 +20,23 @@
     <div id="categoriesList">
       <table class="table">
         <thead>
-          <tr><th>ID</th><th>Name</th><th>Actions</th></tr>
+          <tr><th>ID</th><th>Name</th><th>Description</th><th>Actions</th></tr>
         </thead>
         <tbody id="categoriesBody">
-          <tr><td colspan="3">No categories</td></tr>
+          <tr th:if="${categories == null or #lists.isEmpty(categories)}">
+            <td colspan="4" class="text-center">
+              <div class="alert alert-info mb-0">No categories found</div>
+            </td>
+          </tr>
+          <tr th:each="category : ${categories}">
+            <td th:text="${category.id}">1</td>
+            <td th:text="${category.name}">Category Name</td>
+            <td th:text="${category.description}">Description</td>
+            <td>
+              <button class="btn btn-sm btn-primary edit-category-btn" th:data-id="${category.id}" th:data-name="${category.name}" th:data-description="${category.description}">Edit</button>
+              <button class="btn btn-sm btn-danger delete-category-btn" th:data-id="${category.id}">Delete</button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -36,5 +49,86 @@
   <script th:src="@{/js/api.js}"></script>
   <script th:src="@{/js/notifications.js}"></script>
   <script th:src="@{/js/admin.js}"></script>
+
+  <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalLabel">Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="categoryForm">
+            <input type="hidden" id="categoryId">
+            <div class="mb-3">
+              <label for="categoryName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="categoryName" required>
+            </div>
+            <div class="mb-3">
+              <label for="categoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="categoryDescription" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const catModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    let catEditing = false;
+    document.getElementById('addCategoryBtn').addEventListener('click', () => {
+      catEditing = false;
+      document.getElementById('categoryId').value = '';
+      document.getElementById('categoryName').value = '';
+      document.getElementById('categoryDescription').value = '';
+      catModal.show();
+    });
+
+    document.querySelectorAll('.edit-category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        catEditing = true;
+        document.getElementById('categoryId').value = btn.dataset.id;
+        document.getElementById('categoryName').value = btn.dataset.name || '';
+        document.getElementById('categoryDescription').value = btn.dataset.description || '';
+        catModal.show();
+      });
+    });
+
+    document.getElementById('saveCategoryBtn').addEventListener('click', async () => {
+      const payload = {
+        name: document.getElementById('categoryName').value,
+        description: document.getElementById('categoryDescription').value
+      };
+      try {
+        const id = document.getElementById('categoryId').value;
+        const method = catEditing ? 'PUT' : 'POST';
+        const url = catEditing ? `/api/admin/categories/${id}` : '/api/admin/categories';
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('Failed to save category');
+        alert('Category saved');
+        location.reload();
+      } catch (e) {
+        alert('Error saving category: ' + e.message);
+      }
+    });
+
+    document.querySelectorAll('.delete-category-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this category?')) return;
+        try {
+          const res = await fetch(`/api/admin/categories/${btn.dataset.id}`, { method: 'DELETE' });
+          if (!res.ok) throw new Error('Failed to delete category');
+          alert('Category deleted');
+          location.reload();
+        } catch (e) {
+          alert('Error deleting category: ' + e.message);
+        }
+      });
+    });
+  </script>
 </body>
 </html>

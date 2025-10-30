@@ -91,7 +91,7 @@ async function updateOrderStatus(orderId, status) {
 
 async function fetchProducts() {
   try {
-    const products = await API.get('/admin/products');
+  const products = await API.get('/api/admin/products');
     const container = document.getElementById('productsList');
     container.innerHTML = '';
     if (!products || products.length === 0) {
@@ -127,7 +127,7 @@ async function fetchProducts() {
 async function deleteProduct(id) {
   if (!confirm('Delete product #' + id + '?')) return;
   try {
-    await API.del(`/admin/products/${id}`);
+  await API.del(`/api/admin/products/${id}`);
     Notifications.show('Product deleted', 'Success');
     fetchProducts();
   } catch (err) {
@@ -142,7 +142,7 @@ function editProduct(id) {
 
 async function fetchUsers() {
   try {
-    const users = await API.get('/admin/users');
+    const users = await API.get('/api/admin/users');
     const body = document.getElementById('usersBody');
     body.innerHTML = '';
     if (!users || users.length === 0) {
@@ -153,10 +153,11 @@ async function fetchUsers() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${u.id}</td>
-        <td>${u.name}</td>
+        <td>${(u.firstName || '') + ' ' + (u.lastName || '')}</td>
         <td>${u.email}</td>
         <td>${u.role}</td>
         <td>
+          <button class="btn btn-sm btn-primary me-2" onclick="openEditUser(${u.id})">Edit</button>
           <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Delete</button>
         </td>
       `;
@@ -170,7 +171,7 @@ async function fetchUsers() {
 async function deleteUser(id) {
   if (!confirm('Delete user #' + id + '?')) return;
   try {
-    await API.del(`/admin/users/${id}`);
+    await API.del(`/api/admin/users/${id}`);
     Notifications.show('User deleted', 'Success');
     fetchUsers();
   } catch (err) {
@@ -178,9 +179,33 @@ async function deleteUser(id) {
   }
 }
 
+// Populate and show the Edit User modal
+async function openEditUser(id) {
+  try {
+    const user = await API.get(`/api/admin/users/${id}`);
+    const modalEl = document.getElementById('editUserModal');
+    if (!modalEl) {
+      Notifications.show('Edit modal not found on this page.', 'Error', 'error');
+      return;
+    }
+    document.getElementById('editUserId').value = user.id ?? '';
+    document.getElementById('editFirstName').value = user.firstName ?? '';
+    document.getElementById('editLastName').value = user.lastName ?? '';
+    document.getElementById('editEmail').value = user.email ?? '';
+    document.getElementById('editPhone').value = user.phoneNumber ?? '';
+    document.getElementById('editRole').value = user.role ?? 'CUSTOMER';
+    document.getElementById('editEnabled').checked = !!user.enabled;
+    // leave password blank for security; set only if changing
+    const bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+  } catch (err) {
+    Notifications.show('Failed to load user: ' + err.message, 'Error', 'error');
+  }
+}
+
 async function fetchCategories() {
   try {
-    const cats = await API.get('/admin/categories');
+  const cats = await API.get('/api/admin/categories');
     const body = document.getElementById('categoriesBody');
     body.innerHTML = '';
     if (!cats || cats.length === 0) {
@@ -205,13 +230,13 @@ async function fetchCategories() {
 }
 
 function editCategory(id) {
-  window.location.href = `/admin/categories/${id}/edit`;
+  window.location.href = `/admin/categories`;
 }
 
 async function deleteCategory(id) {
   if (!confirm('Delete category #' + id + '?')) return;
   try {
-    await API.del(`/admin/categories/${id}`);
+  await API.del(`/api/admin/categories/${id}`);
     Notifications.show('Category deleted', 'Success');
     fetchCategories();
   } catch (err) {

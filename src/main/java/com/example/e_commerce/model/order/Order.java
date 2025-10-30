@@ -1,11 +1,12 @@
-package com.example.e_com.model.order;
+package com.example.e_commerce.model.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.example.e_com.model.user.Address;
-import com.example.e_com.model.user.User;
+import com.example.e_commerce.model.user.Address;
+import com.example.e_commerce.model.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,13 +24,19 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = { "user", "shippingAddress", "billingAddress", "orderItems", "payment" })
+@JsonIgnoreProperties({ "user", "shippingAddress", "billingAddress", "orderItems", "payment" })
 @Entity
 @Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne
@@ -37,11 +44,11 @@ public class Order {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "shipping_address_id", nullable = false)
+    @JoinColumn(name = "shipping_address_id", nullable = true)
     private Address shippingAddress;
 
     @ManyToOne
-    @JoinColumn(name = "billing_address_id", nullable = false)
+    @JoinColumn(name = "billing_address_id", nullable = true)
     private Address billingAddress;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

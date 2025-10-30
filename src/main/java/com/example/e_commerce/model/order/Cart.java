@@ -1,10 +1,10 @@
-package com.example.e_com.model.order;
+package com.example.e_commerce.model.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.example.e_com.model.user.User;
+import com.example.e_commerce.model.user.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,8 +19,10 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString(exclude = { "user", "cartItems" })
 @Entity
 @Table(name = "carts")
 public class Cart {

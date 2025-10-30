@@ -1,9 +1,9 @@
-package com.example.e_com.model.order;
+package com.example.e_commerce.model.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.example.e_com.model.product.Product;
+import com.example.e_commerce.model.product.Product;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,13 +15,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = { "cart", "product" })
 @Entity
 @Table(name = "cart_items")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne
@@ -36,7 +41,7 @@ public class CartItem {
     private Integer quantity;
 
     @Column(nullable = false)
-    private BigDecimal price; // Current price of the product
+    private BigDecimal price; 
 
     @Column(nullable = false)
     private LocalDateTime addedAt;

@@ -1,4 +1,4 @@
-package com.example.e_com.model.order;
+package com.example.e_commerce.model.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,13 +15,16 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "payments")
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @OneToOne

@@ -1,4 +1,4 @@
-package com.example.e_com.model.order;
+package com.example.e_commerce.model.order;
 
 public enum PaymentStatus {
     PENDING,

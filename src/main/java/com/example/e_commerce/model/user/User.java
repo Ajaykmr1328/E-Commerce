@@ -1,4 +1,4 @@
-package com.example.e_com.model.user;
+package com.example.e_commerce.model.user;
 
 import java.util.Set;
 
@@ -13,13 +13,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "addresses")
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, unique = true)

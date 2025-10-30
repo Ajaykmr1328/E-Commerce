@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - E-Commerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <h2 class="mb-4">Checkout</h2>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Delivery Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="checkoutForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName"
+                                           th:value="${user != null ? user.firstName + ' ' + user.lastName : ''}"
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           th:value="${user != null ? user.email : ''}"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           th:value="${user != null ? user.phoneNumber : ''}"
+                                           required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pinCode" class="form-label">Pin Code</label>
+                                    <input type="text" class="form-control" id="pinCode" name="pinCode"
+                                           pattern="[0-9]{6}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Full Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3"
+                                          placeholder="Street, City, State" required></textarea>
+                            </div>
+                            
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Payment Method</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <select class="form-select" name="paymentMethod" title="Payment Method" required>
+                                            <option value="">-- Select Payment Method --</option>
+                                            <option value="CARD">Credit / Debit Card</option>
+                                            <option value="UPI">UPI</option>
+                                            <option value="COD">Cash on Delivery</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-between">
+                                <a th:href="@{/cart}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-2"></i>Place Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${cartItems != null and !cartItems.isEmpty()}">
+                            <div class="mb-3">
+                                <h6 class="text-muted">Items (<span th:text="${#lists.size(cartItems)}">0</span>)</h6>
+                                <div class="mb-2" th:each="item : ${cartItems}">
+                                    <small>
+                                        <span th:text="${item.product.name}">Product</span> x 
+                                        <span th:text="${item.quantity}">1</span>
+                                    </small>
+                                    <div class="text-end">
+                                        <small th:text="${'₹' + #numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 2, 'POINT')}">₹0.00</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <strong th:text="${'₹' + #numbers.formatDecimal(cartTotal, 0, 'COMMA', 2, 'POINT')}">₹0.00</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span>Free</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong class="text-primary" th:text="${'₹' + #numbers.formatDecimal(cartTotal, 0, 'COMMA', 2, 'POINT')}">₹0.00</strong>
+                            </div>
+                        </div>
+                        <div th:if="${cartItems == null or cartItems.isEmpty()}" class="text-center text-muted">
+                            <p>Your cart is empty</p>
+                            <a th:href="@{/}" class="btn btn-sm btn-primary">Start Shopping</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const params = new URLSearchParams(formData);
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            
+            fetch('/api/orders/place', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Order placed successfully! Order ID: ' + data.orderId);
+                    window.location.href = '/';
+                } else {
+                    alert('❌ Error: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Place Order';
+                }
+            })
+            .catch(error => {
+                alert('❌ Failed to place order. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Place Order';
+            });
+        });
+    </script>
+</body>
+</html>
